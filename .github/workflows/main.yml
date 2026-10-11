@@ -14,8 +14,15 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: gradle build
+      - name: Build
+        run: |
+          DIR=$(dirname "$(find . -name build.gradle.kts | head -n 1)")
+          echo "Project folder: $DIR"
+          test -f "$DIR/src/main/java/fr/ragesmp/RageSMP.java" || { echo "RageSMP.java is missing from the repo"; exit 1; }
+          cd "$DIR"
+          gradle build
+          ls -la build/libs
       - uses: actions/upload-artifact@v4
         with:
           name: RageSMP-jar
-          path: build/libs/*.jar
+          path: '**/build/libs/RageSMP-*.jar'
